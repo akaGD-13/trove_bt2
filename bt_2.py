@@ -12,6 +12,7 @@ HMA计算方法：
 https://school.stockcharts.com/doku.php?id=technical_indicators:hull_moving_average
 
 运行时间：一分钟内
+testing: 21-22
 
 @author: guangdafei
 """
