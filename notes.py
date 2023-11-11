@@ -3,6 +3,9 @@
 """
 Created on Wed Nov  8 00:45:24 2023
 
+提取数据
+运行时间：两年 = 10分钟左右
+
 @author: guangdafei
 """
 
