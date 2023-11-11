@@ -24,7 +24,8 @@ for z in range(4):
         standard = '自由流通市值加权涨跌停比率剪刀差'
     else:
         standard = '自由流通市值加权连板比率剪刀差'
-
+        
+    print(standard)
     df21 = pd.read_csv('tradedate21-22.csv')
     # df21 = pd.read_csv('tradedate23.csv')
     
@@ -52,7 +53,7 @@ for z in range(4):
         #ends inner for loop
         result.loc[i, 'return'] = returns
         if i%10000 == 0:
-            print(i, 'return is', returns)
+            print('Processing: i =', i)
         
     #ends outer for loop
     
