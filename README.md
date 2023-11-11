@@ -1,7 +1,7 @@
 # trove_bt2
 
 
-[推波助澜中期择时]((https://mp.weixin.qq.com/s?__biz=MzI1Mjg3MzYyOA==&mid=2247502995&idx=1&sn=d899e3efca1cc1b4a41307e90110f306&chksm=e9df9260dea81b769ed30cac53b49e1b8a14bdaabea7a008d4890846aaf1aabca955751d4374&mpshare=1&scene=1&srcid=110685Q1vJViDZWbq95WfJMs&sharer_shareinfo=172efbe8769055c3805337fb7d2e895f&sharer_shareinfo_first=172efbe8769055c3805337fb7d2e895f&version=4.1.9.90740&platform=mac#rd))
+[推波助澜中期择时](https://mp.weixin.qq.com/s?__biz=MzI1Mjg3MzYyOA==&mid=2247502995&idx=1&sn=d899e3efca1cc1b4a41307e90110f306&chksm=e9df9260dea81b769ed30cac53b49e1b8a14bdaabea7a008d4890846aaf1aabca955751d4374&mpshare=1&scene=1&srcid=110685Q1vJViDZWbq95WfJMs&sharer_shareinfo=172efbe8769055c3805337fb7d2e895f&sharer_shareinfo_first=172efbe8769055c3805337fb7d2e895f&version=4.1.9.90740&platform=mac#rd)
 
 天地板数据暂时无法提取
 
