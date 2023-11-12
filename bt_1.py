@@ -29,7 +29,7 @@ for z in range(4):
     df21 = pd.read_csv('tradedate21-22.csv')
     # df21 = pd.read_csv('tradedate23.csv')
     
-    maxi = 0.3
+    maxi = 0.1
     step = 0.0009
     result = pd.DataFrame(np.arange(0, maxi, step)).merge(pd.DataFrame(np.arange(-maxi, 0, step)), how='cross')
     result = result.set_axis(['x','y'], axis=1)
@@ -53,7 +53,7 @@ for z in range(4):
         #ends inner for loop
         result.loc[i, 'return'] = returns
         if i%10000 == 0:
-            print('Processing: i =', i)
+            print('\t Processing: i =', i)
         
     #ends outer for loop
     
@@ -81,6 +81,10 @@ for z in range(4):
         
         df21.loc[j,'return'] = returns
     #ends for j loop
+    
+    #save result
+    df21.to_csv(standard+ 'return.csv')
+    
     plt.plot(df21.index, df21.loc[:,'return'], label=standard)
     plt.plot(df21.index, df21.loc[:,'value'], label='300')
     t = 'x, y are ' + str(best_x) + ', ' + str(best_y)
