@@ -117,9 +117,10 @@ sharpe_ratio = yearly_return / yearly_volatility
 #交易次数
     
 title = 'yearly_return = ' + str(yearly_return) + '\n'
+title += 'yearly_volatility = ' + str(yearly_volatility) + '\n'
 title += '盈亏比: ' + str(profit_loss_ratio) + '\n'
 title += 'max_drawdown: ' + str(max_drawdown) + '\n' 
-title += '胜率: ' + str(v_ratio) + '(not accurate, calculating method needs verification)\n' 
+# title += '胜率: ' + str(v_ratio) + '(not accurate, calculating method needs verification)\n' 
 title += 'sharp ratio: ' + str(sharpe_ratio)
 
 
@@ -130,6 +131,7 @@ plt.savefig(standard+'2.png')
 plt.show()
 
 print()
+print(standard + ":")
 print(title)
     
 

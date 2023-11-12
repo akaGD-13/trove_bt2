@@ -83,7 +83,7 @@ for z in range(4):
     #ends for j loop
     
     #save result
-    df21.to_csv(standard+ 'return.csv')
+    df21.to_csv(standard+ 'return.csv') # save the results for result_1 (calculating indexes)
     
     plt.plot(df21.index, df21.loc[:,'return'], label=standard)
     plt.plot(df21.index, df21.loc[:,'value'], label='300')
