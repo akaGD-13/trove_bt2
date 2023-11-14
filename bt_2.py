@@ -66,6 +66,8 @@ for z in range(4):
     
     returns = 1
     value = 1
+    kai_or_ping = False # 开仓中or平仓中 True means Kai, False means Ping
+    trade_count = 0 # 交易次数
     for i in range(df21.index[-1]+1):
             if i < 99:
                 continue;
@@ -78,7 +80,11 @@ for z in range(4):
             
             if df21.loc[i-1,'HMA30'] / df21.loc[i-1,'HMA100'] > 1.15 and df21.loc[i-1,'HMA30'] > 0:
                 returns = returns * (1 + df21.loc[i,'pct_chg']/100)
-            # otherwise returns not change
+                if (kai_or_ping == False):
+                    kai_or_ping = True
+                    trade_count += 1
+            else:  # otherwise returns not change, 平仓
+                kai_or_ping = False
             
             df21.loc[i,'return'] = returns
             
@@ -116,7 +122,7 @@ for z in range(4):
     # 最大回撤
     max_drawdown = (max - min)/max
     
-    # 胜率 （暂时不清楚计算方法 不确定什么是交易次数 连续两天都是做多 算两次还是一次？
+    # 胜率 （
     v_ratio = v_count / days
     # 盈亏比 = avg_profit/avg_loss
     profit_loss_ratio = profit_sum /loss_sum
@@ -124,15 +130,16 @@ for z in range(4):
     risk_free_return = 0 # 无风险利率为0 可调整为其他
     yearly_volatility = np.std(df21.loc[99:, 'rate_of_return']) * np.sqrt(250)
     sharpe_ratio = yearly_return / yearly_volatility
-    #交易次数
+    # 年均交易次数 (暂时不清楚计算方法 不确定什么是交易次数 连续两天都是做多 算两次还是一次？)
+    yearly_trade_count = trade_count / year
         
     title = 'yearly_return = ' + str(yearly_return) + '\n'
     title += 'yearly_volatility = ' + str(yearly_volatility) + '\n'
     title += '盈亏比: ' + str(profit_loss_ratio) + '\n'
     title += 'max_drawdown: ' + str(max_drawdown) + '\n' 
     # title += '胜率: ' + str(v_ratio) + '(not accurate, calculating method needs verification)\n' 
-    title += 'sharp ratio: ' + str(sharpe_ratio)
-    
+    title += 'sharp ratio: ' + str(sharpe_ratio) + '\n'
+    title += 'yearly trade count: ' + str(yearly_trade_count)
     
     
     plt.plot(df21.index[99:], df21.loc[99:df21.index[-1]+1,'return'], label = standard)
