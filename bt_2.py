@@ -69,7 +69,7 @@ for i in range(df21.index[-1]+1):
         n = 100;
         df21.loc[i,'HMA100'] = cal_WMA(df21, i, int(math.sqrt(n)), 'HMA_raw100')
         
-        if df21.loc[i,'HMA30'] / df21.loc[i,'HMA100'] > 1.15 and df21.loc[i,'HMA30'] > 0:
+        if df21.loc[i-1,'HMA30'] / df21.loc[i-1,'HMA100'] > 1.15 and df21.loc[i-1,'HMA30'] > 0:
             returns = returns * (1 + df21.loc[i,'pct_chg']/100)
         # otherwise returns not change
         
