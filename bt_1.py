@@ -29,7 +29,7 @@ for z in range(4):
     df21 = pd.read_csv('tradedate21-22.csv')
     # df21 = pd.read_csv('tradedate23.csv')
     
-    maxi = 0.1
+    maxi = 0.2
     step = 0.0009
     result = pd.DataFrame(np.arange(0, maxi, step)).merge(pd.DataFrame(np.arange(-maxi, 0, step)), how='cross')
     result = result.set_axis(['x','y'], axis=1)
@@ -41,14 +41,17 @@ for z in range(4):
     249998  0.499 -0.002       
     249999  0.499 -0.001     
     '''  
-    for i in range(result.index[-1]+1):
+    for i in range(result.index[-1]+1): # loop through all combination of x and y
         x = result.loc[i,'x']
         y = result.loc[i,'y']
         returns = 1
-        for j in range(df21.index[-1]+1):
-            if (df21.loc[j,standard] > x): # 做多
+        for j in range(df21.index[-1]+1): # loop through all date
+            if j == 0 :
+                result.loc[i, 'return'] = returns
+                continue # skip the first date since there is no data
+            if (df21.loc[j-1,standard] > x): # 做多
                 returns = returns * (df21.loc[j,'pct_chg']/100 + 1)
-            elif (df21.loc[j,standard] < y): # 做空
+            elif (df21.loc[j-1,standard] < y): # 做空
                 returns = returns * -1 * (df21.loc[j,'pct_chg']/100 - 1)
         #ends inner for loop
         result.loc[i, 'return'] = returns
@@ -66,14 +69,17 @@ for z in range(4):
     
     # test using 2023 data:
     df21 = pd.read_csv('tradedate23.csv')
-    df21['return'] = ''
-    df21['value'] = ''
+    df21['return'] = 1
+    df21['value'] = 1
     value = 1
     returns = 1
     for j in range(df21.index[-1]+1):
-        if (df21.loc[j,standard] > best_x): # 做多
+        if j == 0 : # skip the first date since there is no data
+            result.loc[i, 'return'] = returns
+            continue
+        if (df21.loc[j-1,standard] > best_x): # 做多
             returns = returns * (df21.loc[j,'pct_chg']/100 + 1)
-        elif (df21.loc[j,standard] < best_y): # 做空
+        elif (df21.loc[j-1,standard] < best_y): # 做空
             returns = returns * -1 * (df21.loc[j,'pct_chg']/100 - 1)
         
         value = value * (df21.loc[j,'pct_chg']/100 + 1)
@@ -86,7 +92,7 @@ for z in range(4):
     df21.to_csv(standard+ 'return.csv') # save the results for result_1 (calculating indexes)
     
     plt.plot(df21.index, df21.loc[:,'return'], label=standard)
-    plt.plot(df21.index, df21.loc[:,'value'], label='300')
+    plt.plot(df21.index, df21.loc[:,'value'], label='HS300')
     t = 'x, y are ' + str(best_x) + ', ' + str(best_y)
     plt.title(t)
     plt.legend()

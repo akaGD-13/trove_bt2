@@ -57,11 +57,17 @@ for z in range(4):
     v_ratio = v_count / days
     
     # 盈亏比 = avg_profit/avg_loss
-    profit_loss_ratio = profit_sum /loss_sum
+    if loss_sum == 0:
+        profit_loss_ratio = 0
+    else:
+        profit_loss_ratio = profit_sum /loss_sum
     #夏普比率
     risk_free_return = 0 # 无风险利率为0 可调整为其他
     yearly_volatility = np.std(df21.loc[1:, 'rate_of_return']) * np.sqrt(250)
-    sharpe_ratio = yearly_return / yearly_volatility
+    if yearly_volatility == 0:
+        sharpe_ratio = 0
+    else:
+        sharpe_ratio = yearly_return / yearly_volatility
     #交易次数
         
     title = 'yearly_return = ' + str(yearly_return) + '\n'
