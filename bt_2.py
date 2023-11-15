@@ -43,8 +43,8 @@ for z in range(4):
     else:
         standard = '自由流通市值加权连板比率剪刀差'
 
-    df21 = pd.read_csv('tradedate21-22.csv')
-    # df21 = pd.read_csv('tradedate23.csv')
+    # df21 = pd.read_csv('tradedate21-22.csv')
+    df21 = pd.read_csv('tradedate23.csv')
     
     # print(df21)
     

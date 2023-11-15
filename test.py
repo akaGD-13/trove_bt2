@@ -9,6 +9,7 @@ Created on Wed Nov  8 12:46:38 2023
 import tushare as ts
 import pandas as pd
 import numpy as np
+from datetime import datetime, timedelta
 
 import matplotlib.pyplot as plt
 plt.rcParams['font.sans-serif'] = ['SimHei']
@@ -18,16 +19,26 @@ token = "13bb0841c8a377221b39d9142f42bae2e2e9a897b9f692c75dd90d65"
 ts.set_token(token)
 pro = ts.pro_api()
 
-date = '20210104'
-df =pro.index_weight(index_code='399300.SZ', start_date=date, end_date=date)
-df = df.set_index('con_code')
-print(df)
-df['pct_chg'] = 0
-df_temp = pro.index_weight(index_code='399300.SZ', start_date='20230201', end_date='20230201')
-# print(df_temp)
-df = df_temp.merge(df.loc[:,['pct_chg']], how='left', right_on=df.index, left_on='con_code')
-df.fillna(0, inplace=True)
-print(df)
+date = '20220801'
+df = ts.pro_bar(ts_code='600000.SH',
+                    freq='1min', 
+                    start_date='2020-01-07 09:00:00', 
+                    end_date='2020-01-08 17:00:00')
+# df = df.set_index('con_code')
+# print(df)
+# df['pct_chg'] = 0
+# df_temp = pro.index_weight(index_code='399300.SZ', start_date='20230201', end_date='20230201')
+# # print(df_temp)
+# df = df_temp.merge(df.loc[:,['pct_chg']], how='left', right_on=df.index, left_on='con_code')
+# df.fillna(0, inplace=True)
+print(df.iloc[:,[1,2,3,4,5]])
+
+# start_date = datetime(2023, 1, 3)  # 假设2023年1月3日是一个交易日
+
+# # 计算向前25*7个自然日的日期
+# result_date = start_date - timedelta(days=20 * 7)
+
+# print("向前20*7个自然日的日期是:", result_date.strftime("%Y-%m-%d"))
 
 # tradedate = pro.query('daily', ts_code='600519.SH' , start_date='20161029', end_date='20161130')
 # tradedate = tradedate.iloc[:,1:3]

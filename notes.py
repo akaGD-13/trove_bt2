@@ -24,8 +24,8 @@ pro = ts.pro_api()
 start = '20210104'
 end = '20221231'
 # remember to also change the file path when saving at the end of this program
-start = '20230103'
-end = '20231231'
+start = '20220801' # approximately 100 trade date before 20230101 (to calculate HMA100)
+end = '20230928'
 #获取日期信息
 tradedate = pro.query('daily', ts_code='600519.SH' , start_date=start, end_date=end)
 tradedate = tradedate.iloc[:,1:3]
