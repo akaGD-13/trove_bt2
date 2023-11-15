@@ -143,7 +143,7 @@ for i in range(size): # loop through all date
                 dt_cw += df.iloc[j,3]/100
         
         # 天地板与地天板
-        if high >= Open*1.095 and low <= Open*1.095:
+        if high >= Open*1.095 and low <= Open*(1-0.095):
             print('tdb/dtb appears: (open, high, low) ', str(Open), str(high), str(low))
             start_time = date + ' 09:00:00'
             end_time = date + '17:00:00'
