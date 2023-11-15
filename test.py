@@ -18,6 +18,16 @@ token = "13bb0841c8a377221b39d9142f42bae2e2e9a897b9f692c75dd90d65"
 ts.set_token(token)
 pro = ts.pro_api()
 
+date = '20210104'
+df =pro.index_weight(index_code='399300.SZ', start_date=date, end_date=date)
+df = df.set_index('con_code')
+print(df)
+df['pct_chg'] = 0
+df_temp = pro.index_weight(index_code='399300.SZ', start_date='20230201', end_date='20230201')
+# print(df_temp)
+df = df_temp.merge(df.loc[:,['pct_chg']], how='left', right_on=df.index, left_on='con_code')
+df.fillna(0, inplace=True)
+print(df)
 
 # tradedate = pro.query('daily', ts_code='600519.SH' , start_date='20161029', end_date='20161130')
 # tradedate = tradedate.iloc[:,1:3]
@@ -53,15 +63,15 @@ pro = ts.pro_api()
 # print(tradedate)
 # print(tradedate.iloc[0,0])
 
-start = '20210101'
-end = '20221231'
-# code = '600519.SH'
-# returns = pro.daily(ts_code='399300.SZ', start_date=start, end_date=end)
-returns = pro.index_daily(ts_code='399300.SZ', start_date=start, end_date=end)
-returns = returns.loc[:,['trade_date','pct_chg']]
-for i in range(100):
-    j = i + 300
-    print(returns.loc[j,'pct_chg'])
+# start = '20210101'
+# end = '20221231'
+# # code = '600519.SH'
+# # returns = pro.daily(ts_code='399300.SZ', start_date=start, end_date=end)
+# returns = pro.index_daily(ts_code='399300.SZ', start_date=start, end_date=end)
+# returns = returns.loc[:,['trade_date','pct_chg']]
+# for i in range(100):
+#     j = i + 300
+#     print(returns.loc[j,'pct_chg'])
 # print(returns)
 # df =pro.index_weight(index_code='399300.SZ', start_date=start, end_date=start)
 #         #     index_code   con_code trade_date  weight

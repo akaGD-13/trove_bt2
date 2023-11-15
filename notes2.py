@@ -21,10 +21,8 @@ token = "13bb0841c8a377221b39d9142f42bae2e2e9a897b9f692c75dd90d65"
 ts.set_token(token)
 pro = ts.pro_api()
 
-start = '20210104'
-end = '20221231'
-# remember to also change the file path when saving at the end of this program
-start = '20230103'
+
+start = '20230102'
 end = '20231231'
 #获取日期信息
 tradedate = pro.query('daily', ts_code='600519.SH' , start_date=start, end_date=end)
@@ -44,11 +42,9 @@ tradedate['自由流通市值加权连板比率剪刀差'] = '' #9
 tradedate['自由流通市值加权地天与天地板比率剪刀差'] = '' #10
 size = tradedate.index[-1]+1
 
-df = pro.index_weight(index_code='399300.SZ', start_date=start, end_date=start)
-# df = df.set_index('con_code')
-df['pct_chg'] = 0
-df['prev'] = 0
-print(df)
+df = df =pro.index_weight(index_code='399300.SZ', start_date=start, end_date=start)
+df_copy = df.copy()
+
 
 for i in range(size): # loop through all date 
     #都去除百分号
@@ -68,71 +64,81 @@ for i in range(size): # loop through all date
     date = tradedate.iloc[i,0] #日期
     print('date is: ' + date)
     # 获取index weighth
-    df_temp =pro.index_weight(index_code='399300.SZ', start_date=date, end_date=date)
+    df =pro.index_weight(index_code='399300.SZ', start_date=date, end_date=date)
         #     index_code   con_code trade_date  weight
         # 0    399300.SZ  600519.SH   20230901  6.2310
         # 1    399300.SZ  300750.SZ   20230901  3.3419
         # 2    399300.SZ  601318.SH   20230901  2.9086
         # ..         ...        ...        ...     ...
         # 299  399300.SZ  001289.SZ   20230901  0.0162
-    
-    if df_temp.empty: #use the original df, update prev
-        print("empty")
-    else: # not empty, update df
-        print('not empty')
-        df = df_temp.merge(df.loc[:,['con_code','prev','pct_chg']], how='left', left_on = 'con_code', right_on='con_code')
-        # df = df.set_index('con_code')
-        
-    df.fillna(0, inplace=True) # if some stock remove/added set their pct_chg and prev as 0
-    df.loc[:,'prev'] = df.loc[:,'pct_chg']  #update prev  
-    codelist = df.loc[:,'con_code']
+    df['prev'] = 0
+    df['pct_chg'] = 0
+    if df.empty:
+        df = df_copy
+    else:
+        df_copy = df.copy()
+    codelist = df.iloc[:,1]
     allcode = ''
     
     for x in range(300):
         allcode = codelist[x] + ',' + allcode
     #ends this for loop
+    
         
     # 提取这些stock的pct_change, swing, limit(涨跌停类型)
-    # df1 = pro.bak_daily(ts_code=allcode, trade_date=date, fields='ts_code,pct_change,swing') # 涨幅，振幅
-    # df2 = pro.limit_list_d(ts_code=allcode, trade_date=date, fields='ts_code,limit')  #涨停/跌停
-    df1 = pro.daily(ts_code=allcode, start_date=date, end_date=date) # 涨幅
-    df1 = df1.loc[:,['ts_code','pct_chg']]
+    df1 = pro.bak_daily(ts_code=allcode, trade_date=date, fields='ts_code,pct_change,swing') # 涨幅，振幅
+    df2 = pro.limit_list_d(ts_code=allcode, trade_date=date, fields='ts_code,limit')  #涨停/跌停
+    
+    # df1 = pro.daily(ts_code=allcode, start_date=date, end_date=date) # 涨幅
+    # df1 = df1.loc[:,['ts_code','pct_chg']]
     
     df1 = pd.DataFrame(codelist).merge(df1, how='left', left_on='con_code', right_on='ts_code') 
+    df1 = df1.merge(df2, how='left', left_on='con_code', right_on='ts_code') 
     
-    # df1 = df1.merge(df2, how='left', left_on='con_code', right_on='ts_code')
+    
     df1.fillna(0,inplace=True)
     df1= df1.set_index('con_code')
-    df1 = df1.loc[:,['pct_chg']] # 'limit'
-    df1['swing'] = 0
+    df1 = df1.loc[:,['pct_change','swing','limit']] # only keep the needed columns
+    # df1['swing'] = 0
 
     for j in range(300): #loop through all stocks
         code = codelist[j]
         # 获取和他们对应涨跌幅
-        prev_pct = df.loc[j,'prev']
+        prev_pct = df.loc[j,'pct_chg'] #更新pct_cg
+        df.loc[j,'prev'] = prev_pct
         
         pct = df1.loc[code, 'pct_chg']
         swing = df1.loc[code, 'swing']
+        limit = df1.loc[code, 'limit']
         
         df.loc[j,'pct_chg'] = pct
-        
-        if (j == 1):
-            print(code, ':', prev_pct, pct)
-        if pct > 9.5:
+
+        if pct >= 9.5:
             zt += 1/300
             zt_w += df.iloc[j,3]/100
             if prev_pct > 9.5: #连板涨停
                     zt_c += 1/300
                     zt_cw += df.iloc[j,3]/100
-        elif pct < -9.5:
+        elif pct <= -9.5:
             dt += 1/300
             dt_w += df.iloc[j,3]/100
             if prev_pct < -9.5: # 连续跌停
                 dt_c += 1/300
                 dt_cw += df.iloc[j,3]/100
+        
+        # 天地板与地天板
+        if swing >= 19: #振幅超过19%
+            if limit == 'U': # 涨停,地天板
+                dtb += 1/300
+                dtb_w += df.iloc[j,3]/100
+            elif limit == 'D': #跌停，天地板
+                tdb += 1/300
+                tdb_w += df.iloc[j,3]/100
+                
+            
                 
     # ends inner for loop
-    # print(df)
+    print(df)
     tradedate.iloc[i,1] = zt
     tradedate.iloc[i,2] = dt
     tradedate.iloc[i,3] = dtb
@@ -144,8 +150,6 @@ for i in range(size): # loop through all date
     tradedate.iloc[i,9] = zt_cw - dt_cw
     tradedate.iloc[i,10] = dtb_w - tdb_w
     
-    
-    print(df)
 #ends outer for loop
 
 #add return of the 399300.SZ
@@ -153,8 +157,8 @@ returns = pro.index_daily(ts_code='399300.SZ', start_date=start, end_date=end)
 returns = returns.loc[:,['trade_date','pct_chg']]
 tradedate = tradedate.merge(returns, how='left', left_on='trade_date', right_on='trade_date')
 print(tradedate);
-# tradedate.to_csv('tradedate21-22.csv') # 2021-2022
-tradedate.to_csv('tradedate23.csv') # 2023
+tradedate.to_csv('tradedate23.csv')
+            
             
 # V1
 #     提取涨跌幅 得出涨停比率与跌停比率 9.5%为分界
