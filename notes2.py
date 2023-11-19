@@ -14,7 +14,7 @@ import pandas as pd
 import numpy as np
 
 import matplotlib.pyplot as plt
-plt.rcParams['font.sans-serif'] = ['SimHei']
+# plt.rcParams['font.sans-serif'] = ['SimHei']
 
 
 token = "13bb0841c8a377221b39d9142f42bae2e2e9a897b9f692c75dd90d65"

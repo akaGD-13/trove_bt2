@@ -74,7 +74,6 @@ for z in range(4):
             n = 30;
             df21.loc[i,'HMA30'] = cal_WMA(df21, i, int(math.sqrt(n)), 'HMA_raw30')
     
-            # HMA_raw100
             n = 100;
             df21.loc[i,'HMA100'] = cal_WMA(df21, i, int(math.sqrt(n)), 'HMA_raw100')
             
