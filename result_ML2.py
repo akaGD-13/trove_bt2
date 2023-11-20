@@ -4,6 +4,8 @@
 Created on Sat Nov 18 18:31:29 2023
 
 machine learning on HMA30/HMA100
+folliowng the report:
+    https://mp.weixin.qq.com/s?__biz=MzI1Mjg3MzYyOA==&mid=2247502995&idx=1&sn=d899e3efca1cc1b4a41307e90110f306&chksm=e9df9260dea81b769ed30cac53b49e1b8a14bdaabea7a008d4890846aaf1aabca955751d4374&mpshare=1&scene=1&srcid=110685Q1vJViDZWbq95WfJMs&sharer_shareinfo=172efbe8769055c3805337fb7d2e895f&sharer_shareinfo_first=172efbe8769055c3805337fb7d2e895f&version=4.1.9.90740&platform=mac#rd
 
 @author: guangdafei
 """
@@ -168,15 +170,33 @@ df23['return'] = 1
 df23['hs300'] = 1
 value = 1
 hs300 = 1
+kai_or_ping = False # True：开仓，False： 平仓中
+trade_count = 0
+v_count = 0
+temp_value = 0
 
 for i in range(df23.index[-1]+1):
     if i < 100:
         continue
     if df23.loc[i-1,'tree_result'] == True: # long
+        temp = value # 储存前一天的
         value = value * (1 + df23.loc[i, 'pct_chg']/100)
+        if kai_or_ping == False: #还未开仓
+            kai_or_ping = True
+            trade_count += 1 
+            temp_value = temp # 记录开仓时的value
+        if i == df23.index[-1] and kai_or_ping == True: # last day 并且 开仓中
+            # print(value,'-', temp_value,'=', value-temp_value)
+            if value - temp_value > 0:
+                v_count += 1
     else:
-        if df23.loc[i, 'pct_chg'] != -1: # short
-            value = value * (1 - df23.loc[i, 'pct_chg']/100)
+        if kai_or_ping == True: # 如果没平仓 or last day
+            kai_or_ping = False # 平仓
+            # print(value,'-', temp_value,'=', value-temp_value) # 还有一行print在上面，请一起comment/uncomment
+            if value - temp_value > 0: #平仓 - 开仓 > 0 盈利
+                v_count +=1
+    #     if df23.loc[i, 'pct_chg'] != -1: # short
+    #         value = value * (1 - df23.loc[i, 'pct_chg']/100)
     df23.loc[i, 'return'] = value;
     hs300 = hs300 * (1 + df23.loc[i, 'pct_chg']/100)
     df23.loc[i, 'hs300'] = hs300
@@ -187,3 +207,52 @@ plt.title('Logistic Regression')
 plt.legend()
 plt.savefig('Logistic_Regression2.png')
 plt.clf()    
+
+# 计算指标
+max_ = -999
+min_ = 999
+profit_sum = 0
+loss_sum = 0
+df23['rate_of_return'] = 0
+
+for index in range(df23.index[-1]+1):
+    if index < 100:
+        continue
+    if df23.loc[index, 'return'] > max_:
+        max_ = df23.loc[index, 'return']
+    if df23.loc[index, 'return'] < min_:
+        min_ = df23.loc[index, 'return']
+    if df23.loc[index, 'return'] > df23.loc[index-1, 'return']:
+        profit_sum += df23.loc[index, 'return'] - df23.loc[index-1, 'return']
+    else:
+        loss_sum -=  df23.loc[index, 'return'] - df23.loc[index-1, 'return']
+    
+    df23.loc[index, 'rate_of_return'] =  (df23.loc[index, 'return'] - df23.loc[index-1, 'return']) / df23.loc[index-1, 'return']
+
+#年化收益0
+days = len(df23.index[100:])
+year = days/242
+yearly_return = pow(df23.loc[99+days, 'return']/df23.loc[100,'return'], 1/year) - 1
+# 最大回撤
+max_drawdown = (max_ - min_)/max_
+
+# 胜率 （
+v_ratio = v_count / trade_count
+# 盈亏比 = avg_profit/avg_loss
+profit_loss_ratio = profit_sum /loss_sum
+#夏普比率
+risk_free_return = 0 # 无风险利率为0 可调整为其他
+yearly_volatility = np.std(df23.loc[100:, 'rate_of_return']) * np.sqrt(250)
+sharpe_ratio = yearly_return / yearly_volatility
+# 年均交易次数 (暂时不清楚计算方法 不确定什么是交易次数 连续两天都是做多 算两次还是一次？)
+yearly_trade_count = trade_count / year
+    
+title = 'yearly_return = ' + str(yearly_return) + '\n'
+# title += 'yearly_volatility = ' + str(yearly_volatility) + '\n'
+title += 'max_drawdown: ' + str(max_drawdown) + '\n' 
+title += '胜率: ' + str(v_ratio) + '\n' 
+title += '盈亏比: ' + str(profit_loss_ratio) + '\n'
+title += 'sharp ratio: ' + str(sharpe_ratio) + '\n'
+title += 'yearly trade count: ' + str(yearly_trade_count)
+
+print(title)
