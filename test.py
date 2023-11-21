@@ -20,10 +20,7 @@ ts.set_token(token)
 pro = ts.pro_api()
 
 date = '20220801'
-df = ts.pro_bar(ts_code='600000.SH',
-                    freq='1min', 
-                    start_date='2020-01-07 09:00:00', 
-                    end_date='2020-01-08 17:00:00')
+
 # df = df.set_index('con_code')
 # print(df)
 # df['pct_chg'] = 0
@@ -31,7 +28,7 @@ df = ts.pro_bar(ts_code='600000.SH',
 # # print(df_temp)
 # df = df_temp.merge(df.loc[:,['pct_chg']], how='left', right_on=df.index, left_on='con_code')
 # df.fillna(0, inplace=True)
-print(df.iloc[:,[1,2,3,4,5]])
+# print(df.iloc[:,[1,2,3,4,5]])
 
 # start_date = datetime(2023, 1, 3)  # 假设2023年1月3日是一个交易日
 
@@ -48,7 +45,8 @@ print(df.iloc[:,[1,2,3,4,5]])
 # tradedate.iloc[0,1] = 1
 # print(tradedate)
 
-# df = pro.index_weight(index_code='399300.SZ', start_date='20161129', end_date='20161129')
+df = pro.index_weight(index_code='399300.SZ', start_date='20091009', end_date='20091009')
+print(df)
 #     #     index_code   con_code trade_date  weight
 #     # 0    399300.SZ  600519.SH   20230901  6.2310
 #     # 1    399300.SZ  300750.SZ   20230901  3.3419

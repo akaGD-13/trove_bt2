@@ -21,11 +21,14 @@ token = "13bb0841c8a377221b39d9142f42bae2e2e9a897b9f692c75dd90d65"
 ts.set_token(token)
 pro = ts.pro_api()
 
-start = '20210104'
-end = '20221231'
-# remember to also change the file path when saving at the end of this program
-start = '20220801' # approximately 100 trade date before 20230101 (to calculate HMA100)
+index_name= '399300.SZ'
+
+start = '20091009'
 end = '20230928'
+# remember to also change the file path when saving at the end of this program
+
+# start = '20220801' # approximately 100 trade date before 20230101 (to calculate HMA100)
+# end = '20230928'
 #获取日期信息
 tradedate = pro.query('daily', ts_code='600519.SH' , start_date=start, end_date=end)
 tradedate = tradedate.iloc[:,1:3]
@@ -44,7 +47,7 @@ tradedate['自由流通市值加权连板比率剪刀差'] = '' #9
 tradedate['自由流通市值加权地天与天地板比率剪刀差'] = '' #10
 size = tradedate.index[-1]+1
 
-df = pro.index_weight(index_code='399300.SZ', start_date=start, end_date=start)
+df = pro.index_weight(index_code=index_name, start_date=start, end_date=start)
 # df = df.set_index('con_code')
 df['pct_chg'] = 0
 df['prev'] = 0
@@ -68,7 +71,7 @@ for i in range(size): # loop through all date
     date = tradedate.iloc[i,0] #日期
     print('date is: ' + date)
     # 获取index weighth
-    df_temp =pro.index_weight(index_code='399300.SZ', start_date=date, end_date=date)
+    df_temp =pro.index_weight(index_code=index_name, start_date=date, end_date=date)
         #     index_code   con_code trade_date  weight
         # 0    399300.SZ  600519.SH   20230901  6.2310
         # 1    399300.SZ  300750.SZ   20230901  3.3419
@@ -149,12 +152,13 @@ for i in range(size): # loop through all date
 #ends outer for loop
 
 #add return of the 399300.SZ
-returns = pro.index_daily(ts_code='399300.SZ', start_date=start, end_date=end)
+returns = pro.index_daily(ts_code=index_name, start_date=start, end_date=end)
 returns = returns.loc[:,['trade_date','pct_chg']]
 tradedate = tradedate.merge(returns, how='left', left_on='trade_date', right_on='trade_date')
 print(tradedate);
 # tradedate.to_csv('tradedate21-22.csv') # 2021-2022
-tradedate.to_csv('tradedate23.csv') # 2023
+# tradedate.to_csv('tradedate23.csv') # 2023
+tradedate.to_csv('tradedate09-23.csv') # 2009-2023
             
 # V1
 #     提取涨跌幅 得出涨停比率与跌停比率 9.5%为分界
