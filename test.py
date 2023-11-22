@@ -45,8 +45,10 @@ date = '20220801'
 # tradedate.iloc[0,1] = 1
 # print(tradedate)
 
-df = pro.index_weight(index_code='399300.SZ', start_date='20091009', end_date='20091009')
+df = pro.index_weight(index_code='399300.SZ', start_date='20141030', end_date='20141030')
 print(df)
+if df.empty or df.index[-1] != 299:
+    print('yes')
 #     #     index_code   con_code trade_date  weight
 #     # 0    399300.SZ  600519.SH   20230901  6.2310
 #     # 1    399300.SZ  300750.SZ   20230901  3.3419

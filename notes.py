@@ -79,7 +79,7 @@ for i in range(size): # loop through all date
         # ..         ...        ...        ...     ...
         # 299  399300.SZ  001289.SZ   20230901  0.0162
     
-    if df_temp.empty: #use the original df, update prev
+    if df_temp.empty or df_temp.index[-1] != 299: # size is not 300: empty or missing stocks #use the original df, update prev
         print("empty")
     else: # not empty, update df
         print('not empty')
