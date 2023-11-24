@@ -24,6 +24,10 @@ V3
      
 沪深300
 
+
+# 每个 .py 文件基本都会导出图片/结果，注意在更改读取的csv的时候，查看导出的文件的名字，将其更改为与csv对应的文件名防止搞混
+    每个.py文件最开始都会简单介绍一下这个文件是干嘛的
+
 # notes.py:
 
   gathering data of 沪深300, and calculating indexs:
@@ -59,3 +63,13 @@ HMA计算方法：
   
     https://school.stockcharts.com/doku.php?id=technical_indicators:hull_moving_average
 四个图：以 2.png 结尾
+
+# result_1.py:
+    计算bt_1的指标
+
+# result_ML1.py, result_ML2.py: 
+    拟合后的方法1，拟合后的方法2
+    OLS, Decision Tree, LogisticRegression
+
+# ~~~09_23.py
+    data: 2009-2023,与报告原文对应
