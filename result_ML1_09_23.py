@@ -69,10 +69,19 @@ print('Logistic Regression result: ')
 print(model_logreg.score(X_test, y_test))
 print()
 
+
+# testing
 df23['return'] = 1
 df23['hs300'] = 1
 value = 1
 hs300 = 1
+
+# 指标相关
+max_ = -999
+min_ = 999
+profit_sum = 0
+loss_sum = 0
+df23['rate_of_return'] = 0
 
 for i in range(df23.index[-1]+1):
     if i == 0:
@@ -85,6 +94,19 @@ for i in range(df23.index[-1]+1):
     df23.loc[i, 'return'] = value;
     hs300 = hs300 * (1 + df23.loc[i, 'pct_chg']/100)
     df23.loc[i, 'hs300'] = hs300
+    
+    # 计算指标
+    if df23.loc[i, 'return'] > max_:
+        max_ = df23.loc[i, 'return']
+    if df23.loc[i, 'return'] < min_:
+        min_ = df23.loc[i, 'return']
+    if df23.loc[i, 'return'] > df23.loc[i-1, 'return']:
+         profit_sum += df23.loc[i, 'return'] - df23.loc[i-1, 'return']
+    else:
+         loss_sum -=  df23.loc[i, 'return'] - df23.loc[i-1, 'return']
+     
+    df23.loc[i, 'rate_of_return'] =  (df23.loc[i, 'return'] - df23.loc[i-1, 'return']) / df23.loc[i-1, 'return']
+    
 
 plt.plot(df23.index, df23.loc[:,'return'], label='model')
 plt.plot(df23.index, df23.loc[:,'hs300'], label='HS300')
@@ -92,3 +114,31 @@ plt.title('decision tree')
 plt.legend()
 plt.savefig('decision_tree1_09-23.png')
 plt.clf()      
+
+#年化收益0
+days = len(df23.index[100:])
+year = days/242
+yearly_return = pow(df23.loc[99+days, 'return']/df23.loc[100,'return'], 1/year) - 1
+# 最大回撤
+max_drawdown = (max_ - min_)/max_
+
+# 胜率 （
+# v_ratio = v_count / trade_count
+# 盈亏比 = avg_profit/avg_loss
+profit_loss_ratio = profit_sum /loss_sum
+#夏普比率
+risk_free_return = 0 # 无风险利率为0 可调整为其他
+yearly_volatility = np.std(df23.loc[100:, 'rate_of_return']) * np.sqrt(250)
+sharpe_ratio = yearly_return / yearly_volatility
+# 年均交易次数 
+# yearly_trade_count = trade_count / year
+    
+title = 'yearly_return = ' + str(yearly_return) + '\n'
+# title += 'yearly_volatility = ' + str(yearly_volatility) + '\n'
+title += 'max_drawdown: ' + str(max_drawdown) + '\n' 
+# title += '胜率: ' + str(v_ratio) + '\n' 
+title += '盈亏比: ' + str(profit_loss_ratio) + '\n'
+title += 'sharp ratio: ' + str(sharpe_ratio) + '\n'
+# title += 'yearly trade count: ' + str(yearly_trade_count)
+
+print(title)

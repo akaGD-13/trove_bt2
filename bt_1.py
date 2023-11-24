@@ -34,6 +34,7 @@ for z in range(4):
     result = pd.DataFrame(np.arange(0, maxi, step)).merge(pd.DataFrame(np.arange(-maxi, 0, step)), how='cross')
     result = result.set_axis(['x','y'], axis=1)
     result['return'] = ''
+    # x y 的不同组合，每个组合为一行
     '''         x      y return
     0       0.000 -0.500       
     1       0.000 -0.499            
@@ -60,7 +61,7 @@ for z in range(4):
         
     #ends outer for loop
     
-    #find the best x and best y
+    # find the best x and best y
     result = result.sort_values(by=['return'])
     print(result)
     # print(result.iloc[-1, 0:2])

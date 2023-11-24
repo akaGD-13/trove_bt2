@@ -29,6 +29,7 @@ end = '20230928'
 
 # start = '20220801' # approximately 100 trade date before 20230101 (to calculate HMA100)
 # end = '20230928'
+
 #获取日期信息
 tradedate = pro.query('daily', ts_code='600519.SH' , start_date=start, end_date=end)
 tradedate = tradedate.iloc[:,1:3]
@@ -91,7 +92,7 @@ for i in range(size): # loop through all date
     codelist = df.loc[:,'con_code']
     allcode = ''
     
-    for x in range(300):
+    for x in range(300): #提取所有股票代码
         allcode = codelist[x] + ',' + allcode
     #ends this for loop
         

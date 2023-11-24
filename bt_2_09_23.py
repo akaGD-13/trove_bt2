@@ -129,7 +129,7 @@ for z in range(4):
     risk_free_return = 0 # 无风险利率为0 可调整为其他
     yearly_volatility = np.std(df21.loc[99:, 'rate_of_return']) * np.sqrt(250)
     sharpe_ratio = yearly_return / yearly_volatility
-    # 年均交易次数 (暂时不清楚计算方法 不确定什么是交易次数 连续两天都是做多 算两次还是一次？)
+    # 年均交易次数 
     yearly_trade_count = trade_count / year
         
     title = 'yearly_return = ' + str(yearly_return) + '\n'
