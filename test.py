@@ -11,6 +11,7 @@ Created on Wed Nov  8 12:46:38 2023
 import tushare as ts
 import pandas as pd
 import numpy as np
+import json
 from datetime import datetime, timedelta
 
 import matplotlib.pyplot as plt
@@ -21,10 +22,16 @@ token = "13bb0841c8a377221b39d9142f42bae2e2e9a897b9f692c75dd90d65"
 ts.set_token(token)
 pro = ts.pro_api()
 
-date = '20220801'
-formatted_date = date[:4]+'-'+date[4:6]+'-'+date[6:]
-print(formatted_date)
+start = '20091009'
+end = '20230928'
+# remember to also change the file path when saving at the end of this program
 
+# start = '20220801' # approximately 100 trade date before 20230101 (to calculate HMA100)
+# end = '20230928'
+
+#获取日期信息
+tradedate = pro.query('daily', ts_code='600519.SH' , start_date=start, end_date=end)
+# tradedate = pro.query('daily', ts_code='600519.SH' , start_date='20161029', end_date='20161130')
 # df = df.set_index('con_code')
 # print(df)
 # df['pct_chg'] = 0

@@ -36,14 +36,19 @@ def tdb_or_dtb(code, date, Open):
     # 此para的构造参考《HTTP20230404用户手册》 P12 “高频序列”
     para = {
         "codes": code,
-        "indicators": "open",
+        "indicators": "open,high,low,close,avgPrice,volume,amount,change",
         "starttime": formatted_date + " 09:00:00",
         "endtime": formatted_date + " 17:00:00",
     }
     
     # 返回包含数据的字典
     dataDict = requests.get(url, params=para, headers=header).json()
+    if 'table' not in dataDict:
+        print("tdb_or_dtb function: No table, return -1")
+        return -1;
+    print(dataDict)
     open_list = dataDict['tables'][0]['table']['open']
+    print(open_list)
     for i in range(len(open_list)):
         if open_list[i]/Open >= 1.095:
             return 1;
@@ -133,7 +138,7 @@ for i in range(size): # loop through all date
     allcode = ''
     
     for x in range(300): #提取所有股票代码
-        allcode = codelist[x] + ',' + allcode
+        allcode = codelist[x] + ',' + allcode # 这里的顺序不能反
     #ends this for loop
         
     # 提取这些stock的pct_change, swing, limit(涨跌停类型)
@@ -212,7 +217,7 @@ tradedate = tradedate.merge(returns, how='left', left_on='trade_date', right_on=
 print(tradedate);
 # tradedate.to_csv('tradedate21-22.csv') # 2021-2022
 # tradedate.to_csv('tradedate23.csv') # 2023
-tradedate.to_csv('tradedate09-23.csv') # 2009-2023
+tradedate.to_csv('tradedate09-23_tdb.csv') # 2009-2023
             
 # V1
 #     提取涨跌幅 得出涨停比率与跌停比率 9.5%为分界
