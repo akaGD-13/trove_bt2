@@ -30,7 +30,8 @@ end = '20230928'
 # end = '20230928'
 
 #获取日期信息
-tradedate = pro.query('daily', ts_code='600519.SH' , start_date=start, end_date=end)
+tradedate = pro.query('daily', ts_code='000425.SZ' , start_date="20220804", end_date="20220804")
+print(tradedate.empty())
 # tradedate = pro.query('daily', ts_code='600519.SH' , start_date='20161029', end_date='20161130')
 # df = df.set_index('con_code')
 # print(df)

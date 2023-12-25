@@ -43,12 +43,12 @@ def tdb_or_dtb(code, date, Open):
     
     # 返回包含数据的字典
     dataDict = requests.get(url, params=para, headers=header).json()
-    if 'table' not in dataDict:
-        print("tdb_or_dtb function: No table, return -1")
+    if 'tables' not in dataDict:
+        print("tdb_or_dtb function: No tables, return -1")
         return -1;
-    print(dataDict)
+    # print(dataDict)
     open_list = dataDict['tables'][0]['table']['open']
-    print(open_list)
+    # print(open_list)
     for i in range(len(open_list)):
         if open_list[i]/Open >= 1.095:
             return 1;
@@ -57,10 +57,10 @@ def tdb_or_dtb(code, date, Open):
     return -1;
 
     
-    
+tdb_count = 0 # for debugging
+no_data_count = 0
 
 plt.rcParams['font.sans-serif'] = ['SimHei']
-
 
 token = "13bb0841c8a377221b39d9142f42bae2e2e9a897b9f692c75dd90d65"
 ts.set_token(token)
@@ -72,8 +72,8 @@ start = '20091009'
 end = '20230928'
 # remember to also change the file path when saving at the end of this program
 
-# start = '20220801' # approximately 100 trade date before 20230101 (to calculate HMA100)
-# end = '20230928'
+start = '20220801' # approximately 100 trade date before 20230101 (to calculate HMA100)
+end = '20230928'
 
 #获取日期信息
 tradedate = pro.query('daily', ts_code='600519.SH' , start_date=start, end_date=end)
@@ -97,7 +97,7 @@ df = pro.index_weight(index_code=index_name, start_date=start, end_date=start)
 # df = df.set_index('con_code')
 df['pct_chg'] = 0
 df['prev'] = 0
-print(df)
+# print(df)
 
 for i in range(size): # loop through all date 
     #都去除百分号
@@ -115,22 +115,25 @@ for i in range(size): # loop through all date
     tdb_w = 0# 加权天地板比率
     
     date = tradedate.iloc[i,0] #日期
-    print('date is: ' + date)
-    # 获取index weighth
-    df_temp =pro.index_weight(index_code=index_name, start_date=date, end_date=date)
-        #     index_code   con_code trade_date  weight
-        # 0    399300.SZ  600519.SH   20230901  6.2310
-        # 1    399300.SZ  300750.SZ   20230901  3.3419
-        # 2    399300.SZ  601318.SH   20230901  2.9086
-        # ..         ...        ...        ...     ...
-        # 299  399300.SZ  001289.SZ   20230901  0.0162
+    # print('date is: ' + date)
     
-    if df_temp.empty or df_temp.index[-1] != 299: # size is not 300: empty or missing stocks #use the original df, update prev
-        print("empty")
-    else: # not empty, update df
-        print('not empty')
-        df = df_temp.merge(df.loc[:,['con_code','prev','pct_chg']], how='left', left_on = 'con_code', right_on='con_code')
-        # df = df.set_index('con_code')
+    # 获取index weighth
+    if i%3 == 0:
+        df_temp =pro.index_weight(index_code=index_name, start_date=date, end_date=date)
+            #     index_code   con_code trade_date  weight
+            # 0    399300.SZ  600519.SH   20230901  6.2310
+            # 1    399300.SZ  300750.SZ   20230901  3.3419
+            # 2    399300.SZ  601318.SH   20230901  2.9086
+            # ..         ...        ...        ...     ...
+            # 299  399300.SZ  001289.SZ   20230901  0.0162
+        
+        if df_temp.empty or df_temp.index[-1] != 299: # size is not 300: empty or missing stocks #use the original df, update prev
+            # print("empty, 继承之前的index weight")
+            iii = 1
+        else: # not empty, update df
+            # print('not empty，更新index weight')
+            df = df_temp.merge(df.loc[:,['con_code','prev','pct_chg']], how='left', left_on = 'con_code', right_on='con_code')
+            # df = df.set_index('con_code')
         
     df.fillna(0, inplace=True) # if some stock remove/added set their pct_chg and prev as 0
     df.loc[:,'prev'] = df.loc[:,'pct_chg']  #update prev  
@@ -164,8 +167,8 @@ for i in range(size): # loop through all date
         
         df.loc[j,'pct_chg'] = pct
         
-        if (j == 1):
-            print(code, ':', prev_pct, pct)
+        # if (j == 1):
+        #     print(code, ':', prev_pct, pct) # testing
         if pct > 9.5:
             zt += 1/300
             zt_w += df.iloc[j,3]/100
@@ -180,17 +183,26 @@ for i in range(size): # loop through all date
                 dt_cw += df.iloc[j,3]/100
         
         #天地板/地天板
-        high = df1.loc[code, 'high']
-        low = df1.loc[code, 'low']
-        Open = df1.loc[code, 'open']
-        if high/Open >= 1.095 or low/Open <= 0.905:
+        high = float(df1.loc[code, 'high'])
+        low = float(df1.loc[code, 'low'])
+        Open = float(df1.loc[code, 'open'])
+        if Open == 0: # empty dataframe
+            # print(code, date,"Open is 0", Open)
+            iii = 1
+        # print("high low and open are: "+ str(high) + " " + str(low) + " " + str(Open))
+        elif float(high/Open) >= 1.095 and float(low/Open) <= 0.905:
             result_tdb_dtb = tdb_or_dtb(code, date, Open) # insert function here
+            tdb_count += 1
+            print(date, code, "tdb / dtb 出现：" + str(result_tdb_dtb))
+            
             if result_tdb_dtb == 0: #tdb
                 tdb += 1/300
                 tdb_w += df.iloc[j,3]/100
             elif result_tdb_dtb == 1: #dtb
                 dtb += 1/300
                 dtb_w += df.iloc[j,3]/100
+            else:
+                no_data_count += 1
         
                 
     # ends inner for loop
@@ -207,7 +219,7 @@ for i in range(size): # loop through all date
     tradedate.iloc[i,10] = dtb_w - tdb_w
     
     
-    print(df)
+    # print(df)
 #ends outer for loop
 
 #add return of the 399300.SZ
@@ -217,8 +229,10 @@ tradedate = tradedate.merge(returns, how='left', left_on='trade_date', right_on=
 print(tradedate);
 # tradedate.to_csv('tradedate21-22.csv') # 2021-2022
 # tradedate.to_csv('tradedate23.csv') # 2023
-tradedate.to_csv('tradedate09-23_tdb.csv') # 2009-2023
-            
+tradedate.to_csv('tradedate23_tdb.csv') # 2009-2023
+
+print("tdb or dtb count: " + str(tdb_count))
+print("no date: " + str(no_data_count))
 # V1
 #     提取涨跌幅 得出涨停比率与跌停比率 9.5%为分界
 #     通过比率择时

@@ -17,12 +17,12 @@ import matplotlib.pyplot as plt
 import statsmodels.api as sm
 from statsmodels.formula.api import ols
 
-df21 = pd.read_csv('tradedate09-23.csv')
-df23 = pd.read_csv('tradedate23.csv')
+df21 = pd.read_csv('tradedate09-23_tdb.csv')
+df23 = pd.read_csv('tradedate23_tdb.csv')
 
 # regression
 size = df21.index[-1] + 1
-X = df21.loc[:, ['自由流通市值加权涨跌停比率剪刀差', '自由流通市值加权连板比率剪刀差']].drop(index=size-1).reset_index(drop=True)
+X = df21.loc[:, ['自由流通市值加权涨跌停比率剪刀差', '自由流通市值加权连板比率剪刀差','自由流通市值加权地天与天地板比率剪刀差']].drop(index=size-1).reset_index(drop=True)
 y = df21.loc[:, 'pct_chg'].drop(index=0).reset_index(drop=True)
 lm_fit_linear1 = sm.OLS(y, sm.add_constant(X), missing='drop').fit()
 print('Regression: ')
@@ -47,7 +47,7 @@ model_tree.fit(X_train, y_train)
 
 y_pred = model_tree.predict(X_test)
 
-df23['tree_result'] = model_tree.predict(df23.loc[:,  ['自由流通市值加权涨跌停比率剪刀差', '自由流通市值加权连板比率剪刀差']])
+df23['tree_result'] = model_tree.predict(df23.loc[:,  ['自由流通市值加权涨跌停比率剪刀差', '自由流通市值加权连板比率剪刀差','自由流通市值加权地天与天地板比率剪刀差']])
 
 # print(y_pred)
 
@@ -112,7 +112,7 @@ plt.plot(df23.index, df23.loc[:,'return'], label='model')
 plt.plot(df23.index, df23.loc[:,'hs300'], label='HS300')
 plt.title('decision tree')
 plt.legend()
-plt.savefig('decision_tree1_09-23.png')
+plt.savefig('decision_tree1_09-23_tdb.png')
 plt.clf()      
 
 #年化收益0

@@ -28,20 +28,17 @@ def cal_WMA(df: pd.DataFrame, index, n, col): #calculating weighted moving avg
 
 
 def cal_HMA30_HMA100(df21: pd.DataFrame):
-    for z in range(4):
+    for z in range(5):
         if z == 0:
             standard= '涨跌停比率剪刀差'
         elif z == 1:
             standard = '连板比率剪刀差'
         elif z==2:
             standard = '自由流通市值加权涨跌停比率剪刀差'
-        else:
+        elif z==3:
             standard = '自由流通市值加权连板比率剪刀差'
-    
-        # df21 = pd.read_csv('tradedate21-22.csv')
-       
-        
-        # print(df21)
+        else:
+            standard = '自由流通市值加权地天与天地板比率剪刀差'
         
         df21['HMA_raw30'] = 0
         df21['HMA_raw100'] = 0
@@ -83,7 +80,7 @@ def cal_HMA30_HMA100(df21: pd.DataFrame):
 
 
 
-df21 = pd.read_csv('tradedate09-23.csv')
+df21 = pd.read_csv('tradedate09-23_tdb.csv')
 # df23 = pd.read_csv('tradedate23.csv') # for tesitng
 df23 = df21
 
@@ -97,7 +94,7 @@ from statsmodels.formula.api import ols
 
 # regression
 size = df21.index[-1] + 1
-X = df21.loc[:, ['30/100'+'自由流通市值加权涨跌停比率剪刀差', '30/100'+'自由流通市值加权连板比率剪刀差']].drop(index=size-1).reset_index(drop=True).fillna(0)
+X = df21.loc[:, ['30/100'+'自由流通市值加权涨跌停比率剪刀差', '30/100'+'自由流通市值加权连板比率剪刀差', '30/100'+'自由流通市值加权地天与天地板比率剪刀差']].drop(index=size-1).reset_index(drop=True).fillna(0)
 y = df21.loc[:, 'pct_chg'].drop(index=0).reset_index(drop=True).fillna(0)
 lm_fit_linear1 = sm.OLS(y, sm.add_constant(X), missing='drop').fit()
 print('Regression: ')
@@ -147,7 +144,7 @@ print()
 
 
 # decision tree 2
-X = df21.loc[:, ['1.15'+'自由流通市值加权涨跌停比率剪刀差', '1.15'+'自由流通市值加权连板比率剪刀差']].drop(index=size-1).reset_index(drop=True).fillna(0)
+X = df21.loc[:, ['1.15'+'自由流通市值加权涨跌停比率剪刀差', '1.15'+'自由流通市值加权连板比率剪刀差','1.15'+'自由流通市值加权地天与天地板比率剪刀差']].drop(index=size-1).reset_index(drop=True).fillna(0)
 X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42, train_size=0.7, stratify=y)
 
 model_tree2 = DecisionTreeClassifier(criterion='gini', random_state=42)
@@ -165,7 +162,7 @@ print()
 
 
 #testing
-df23['tree_result'] = model_logreg.predict(df23.loc[:,  ['30/100自由流通市值加权涨跌停比率剪刀差', '30/100自由流通市值加权连板比率剪刀差']].fillna(0))
+df23['tree_result'] = model_logreg.predict(df23.loc[:,  ['30/100自由流通市值加权涨跌停比率剪刀差', '30/100自由流通市值加权连板比率剪刀差','30/100自由流通市值加权地天与天地板比率剪刀差']].fillna(0))
 
 df23['return'] = 1
 df23['hs300'] = 1
