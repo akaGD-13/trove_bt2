@@ -22,16 +22,61 @@ token = "13bb0841c8a377221b39d9142f42bae2e2e9a897b9f692c75dd90d65"
 ts.set_token(token)
 pro = ts.pro_api()
 
-start = '20091009'
-end = '20230928'
-# remember to also change the file path when saving at the end of this program
-
-# start = '20220801' # approximately 100 trade date before 20230101 (to calculate HMA100)
+# start = '20091009'
 # end = '20230928'
+# # remember to also change the file path when saving at the end of this program
+date = datetime.now().date().strftime("%Y%m%d")
+index_weight = pd.read_csv('index_weight.csv')
+index_weight = index_weight.iloc[:,1:]
 
+df23 = pd.read_csv('推波助澜.csv')
+df23 = df23.iloc[:,1:]
+
+print(df23)
+
+while int(df23.iloc[-1,0]) >= int(date):
+    df23 = df23.iloc[:-1,:]
+    
+print(df23)
+
+
+# # start = '20220801' # approximately 100 trade date before 20230101 (to calculate HMA100)
+# # end = '20230928'
+
+# start = '20220801' #  100 trade date before 20230103 （first tradedate of 2023) (to calculate HMA100)
+# end = '20231228'
+# index_name= '399300.SZ'
+# # df = pro.index_weight(index_code=index_name, start_date=start, end_date=start)
+# # print(df)
+
+# df23 = pd.read_csv('推波助澜.csv')
+# df23 = df23.iloc[:,1:]
+# print(len(df23.loc[0,:]))
+
+# date = '20231228'
+# returns = pro.index_daily(ts_code=index_name, start_date=date, end_date=date)
+# change = returns.loc[0,'pct_chg']
+# print(returns)
+# print(change)
+# zt = 0 #涨停比率 
+# dt = 0# 跌停比率
+# zt_c = 0 #连板涨停比率
+# dt_c = 0 # 连板跌停比率
+# tdb = 0 #地天板比率
+# dtb = 0#天地板比率
+# zt_w = 0# 加权涨停比率
+# dt_w = 0# 加权跌停比率
+# zt_cw = 0 # 加权连板涨停比率
+# dt_cw = 0 # 加权连板跌停比率
+# dtb_w = 0# 加权地天板比率
+# tdb_w = 0# 加权天地板比率
+
+# df23.loc[len(df23.index)] = [date, zt, dt, dtb, tdb, dtb-tdb, zt-dt, zt_c-dt_c, zt_w-dt_w, zt_cw-dt_cw, dtb_w-tdb_w, change, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+
+# print(df23.loc[len(df23.index)-1,:])
 #获取日期信息
-tradedate = pro.query('daily', ts_code='000425.SZ' , start_date="20220804", end_date="20220804")
-print(tradedate.empty())
+# tradedate = pro.query('daily', ts_code='000425.SZ' , start_date="20220804", end_date="20220804")
+# print(tradedate.empty())
 # tradedate = pro.query('daily', ts_code='600519.SH' , start_date='20161029', end_date='20161130')
 # df = df.set_index('con_code')
 # print(df)

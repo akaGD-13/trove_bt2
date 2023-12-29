@@ -68,12 +68,17 @@ pro = ts.pro_api()
 
 index_name= '399300.SZ'
 
-start = '20091009'
-end = '20230928'
+# start_weight = '20091009'
+# start = '20091009'
+# end = '20230928'
 # remember to also change the file path when saving at the end of this program
 
-start = '20220801' # approximately 100 trade date before 20230101 (to calculate HMA100)
-end = '20230928'
+start_weight = '20220801'
+# start = '20220801' # approximately 100 trade date before 20230101 (to calculate HMA100)
+# end = '20230928'
+
+start = '20220804' #  100 trade date before 20230103 （first tradedate of 2023) (to calculate HMA100)
+end = '20231228'
 
 #获取日期信息
 tradedate = pro.query('daily', ts_code='600519.SH' , start_date=start, end_date=end)
@@ -93,10 +98,11 @@ tradedate['自由流通市值加权连板比率剪刀差'] = '' #9
 tradedate['自由流通市值加权地天与天地板比率剪刀差'] = '' #10
 size = tradedate.index[-1]+1
 
-df = pro.index_weight(index_code=index_name, start_date=start, end_date=start)
+df = pro.index_weight(index_code=index_name, start_date=start_weight, end_date=start_weight)
 # df = df.set_index('con_code')
 df['pct_chg'] = 0
 df['prev'] = 0
+df.to_csv('index_weight.csv')
 # print(df)
 
 for i in range(size): # loop through all date 
@@ -115,7 +121,7 @@ for i in range(size): # loop through all date
     tdb_w = 0# 加权天地板比率
     
     date = tradedate.iloc[i,0] #日期
-    # print('date is: ' + date)
+    print('date is: ' + date)
     
     # 获取index weighth
     if i%3 == 0:
@@ -129,10 +135,12 @@ for i in range(size): # loop through all date
         
         if df_temp.empty or df_temp.index[-1] != 299: # size is not 300: empty or missing stocks #use the original df, update prev
             # print("empty, 继承之前的index weight")
-            iii = 1
+            df = pd.read_csv('index_weight.csv')
+            df = df.iloc[:,1:]
         else: # not empty, update df
             # print('not empty，更新index weight')
             df = df_temp.merge(df.loc[:,['con_code','prev','pct_chg']], how='left', left_on = 'con_code', right_on='con_code')
+            df.to_csv('index_weight.csv')
             # df = df.set_index('con_code')
         
     df.fillna(0, inplace=True) # if some stock remove/added set their pct_chg and prev as 0
@@ -205,7 +213,9 @@ for i in range(size): # loop through all date
                 no_data_count += 1
         
                 
-    # ends inner for loop
+    # ends inner for loop (stocks)
+    
+    df.to_csv('index_weight.csv')
     # print(df)
     tradedate.iloc[i,1] = zt
     tradedate.iloc[i,2] = dt
@@ -220,7 +230,7 @@ for i in range(size): # loop through all date
     
     
     # print(df)
-#ends outer for loop
+#ends outer for loop (date)
 
 #add return of the 399300.SZ
 returns = pro.index_daily(ts_code=index_name, start_date=start, end_date=end)
@@ -229,7 +239,7 @@ tradedate = tradedate.merge(returns, how='left', left_on='trade_date', right_on=
 print(tradedate);
 # tradedate.to_csv('tradedate21-22.csv') # 2021-2022
 # tradedate.to_csv('tradedate23.csv') # 2023
-tradedate.to_csv('tradedate23_tdb.csv') # 2009-2023
+tradedate.to_csv('推波助澜.csv') # 2009-2023
 
 print("tdb or dtb count: " + str(tdb_count))
 print("no date: " + str(no_data_count))
