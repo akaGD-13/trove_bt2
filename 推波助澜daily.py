@@ -130,6 +130,7 @@ def cal_HMA30_HMA100(df21: pd.DataFrame):
 start_time = time.time();
 
 date = datetime.now().date().strftime("%Y%m%d") # 获取当前日期
+# date = '20240104'
 index_weight = pd.read_csv('index_weight.csv')
 index_weight = index_weight.iloc[:,1:]
 
